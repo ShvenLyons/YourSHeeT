@@ -15,6 +15,11 @@
       --accent: #0d6f63;
       --accent-dark: #084d46;
       --ochre: #a87512;
+      --rose: #d75c7a;
+      --sky: #357ec7;
+      --leaf: #3f9f72;
+      --violet: #7c5bd4;
+      --peach: #e9854f;
       --warn: #9b341f;
       --field: #f9fbf8;
       --shadow: 0 18px 50px rgba(32, 47, 39, 0.13);
@@ -29,7 +34,7 @@
       min-height: 100vh;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        linear-gradient(135deg, rgba(13, 111, 99, 0.12), rgba(151, 83, 40, 0.06) 42%, rgba(55, 93, 142, 0.08)),
+        linear-gradient(135deg, rgba(13, 111, 99, 0.12), rgba(215, 92, 122, 0.08) 36%, rgba(53, 126, 199, 0.08)),
         var(--bg);
       color: var(--ink);
     }
@@ -42,6 +47,13 @@
 
     header {
       margin-bottom: 20px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.72fr);
+      gap: 18px;
+      align-items: end;
     }
 
     .brand {
@@ -66,10 +78,53 @@
       color: var(--ochre);
     }
 
+    .brand-rose {
+      color: var(--rose);
+    }
+
+    .brand-sky {
+      color: var(--sky);
+    }
+
+    .brand-leaf {
+      color: var(--leaf);
+    }
+
+    .brand-violet {
+      color: var(--violet);
+    }
+
+    .brand-peach {
+      color: var(--peach);
+    }
+
     .subhead {
       margin: 8px 0 0;
       color: var(--muted);
       font-size: 16px;
+    }
+
+    .visuals {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(54px, 1fr));
+      gap: 10px;
+      align-items: end;
+    }
+
+    .mascot {
+      display: grid;
+      place-items: center;
+      min-height: 86px;
+      border: 1px solid rgba(203, 212, 205, 0.9);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.76);
+      box-shadow: 0 10px 26px rgba(32, 47, 39, 0.08);
+    }
+
+    .mascot svg {
+      width: min(86px, 100%);
+      height: auto;
+      display: block;
     }
 
     .workspace {
@@ -115,7 +170,8 @@
       font-weight: 650;
     }
 
-    input {
+    input,
+    textarea {
       width: 100%;
       min-height: 44px;
       border: 1px solid var(--line);
@@ -128,7 +184,14 @@
       outline: none;
     }
 
-    input:focus {
+    textarea {
+      min-height: 98px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    input:focus,
+    textarea:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(13, 111, 99, 0.14);
     }
@@ -227,15 +290,77 @@
       color: var(--accent-dark);
     }
 
+    .records-panel {
+      margin-top: 16px;
+    }
+
+    .records-grid {
+      display: grid;
+      grid-template-columns: minmax(170px, 0.44fr) minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .record-list {
+      display: grid;
+      gap: 8px;
+      min-height: 80px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcf9;
+      padding: 10px;
+    }
+
+    .record-row {
+      display: grid;
+      grid-template-columns: 80px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      border-radius: 8px;
+      background: #f3f7f3;
+      padding: 9px 10px;
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+    }
+
+    .record-row strong {
+      color: var(--accent-dark);
+    }
+
+    .record-empty {
+      display: grid;
+      place-items: center;
+      min-height: 58px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
     @media (max-width: 780px) {
       main {
         width: min(100vw - 20px, 640px);
         padding: 18px 0;
       }
 
+      .hero,
       .workspace,
-      .row {
+      .row,
+      .records-grid {
         grid-template-columns: 1fr;
+      }
+
+      .visuals {
+        grid-template-columns: repeat(5, minmax(48px, 1fr));
+        gap: 6px;
+      }
+
+      .mascot {
+        min-height: 62px;
+      }
+
+      .record-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
       }
     }
   </style>
@@ -243,11 +368,72 @@
 <body>
   <main>
     <header>
-      <div>
+      <div class="hero">
+        <div>
         <h1 class="brand" aria-label="YourSheeT">
-          <span class="brand-main"><span class="brand-ochre">Y</span>our</span><span class="brand-sheet">S<span class="brand-ochre">h</span>ee<span class="brand-ochre">T</span></span>
+          <span class="brand-main"><span class="brand-ochre">Y</span><span class="brand-rose">o</span><span class="brand-sky">u</span><span class="brand-leaf">r</span></span><span class="brand-sheet"><span class="brand-violet">S</span><span class="brand-ochre">h</span><span class="brand-peach">e</span><span class="brand-sky">e</span><span class="brand-ochre">T</span></span>
         </h1>
         <p class="subhead">时间工作台</p>
+        </div>
+        <div class="visuals" aria-hidden="true">
+          <div class="mascot">
+            <svg viewBox="0 0 96 96" role="img">
+              <circle cx="48" cy="52" r="32" fill="#f2bb62"/>
+              <circle cx="28" cy="29" r="14" fill="#a87512"/>
+              <circle cx="68" cy="29" r="14" fill="#a87512"/>
+              <circle cx="48" cy="54" r="25" fill="#ffd486"/>
+              <circle cx="38" cy="48" r="4" fill="#17211b"/>
+              <circle cx="58" cy="48" r="4" fill="#17211b"/>
+              <path d="M42 59 Q48 65 56 59" fill="none" stroke="#17211b" stroke-width="4" stroke-linecap="round"/>
+              <path d="M47 54 L52 54 L49 58 Z" fill="#5a2e12"/>
+              <path d="M26 75 Q48 86 70 75" fill="#0d6f63"/>
+            </svg>
+          </div>
+          <div class="mascot">
+            <svg viewBox="0 0 96 96" role="img">
+              <rect x="29" y="35" width="38" height="47" rx="17" fill="#2e7c93"/>
+              <circle cx="48" cy="38" r="20" fill="#ffd2a1"/>
+              <path d="M26 30 Q48 12 74 30 L70 40 Q48 31 30 40 Z" fill="#1a5f79"/>
+              <rect x="35" y="21" width="26" height="7" rx="3" fill="#2e7c93"/>
+              <circle cx="40" cy="39" r="3" fill="#17211b"/>
+              <circle cx="56" cy="39" r="3" fill="#17211b"/>
+              <path d="M42 50 Q48 55 56 50" fill="none" stroke="#17211b" stroke-width="3" stroke-linecap="round"/>
+              <rect x="37" y="62" width="26" height="10" rx="5" fill="#f5f0dc"/>
+              <text x="48" y="70" text-anchor="middle" font-size="8" font-weight="700" fill="#1a5f79">城管</text>
+            </svg>
+          </div>
+          <div class="mascot">
+            <svg viewBox="0 0 96 96" role="img">
+              <path d="M48 15 L83 78 H13 Z" fill="#ffd45c" stroke="#9b341f" stroke-width="5" stroke-linejoin="round"/>
+              <rect x="45" y="35" width="6" height="23" rx="3" fill="#9b341f"/>
+              <circle cx="48" cy="66" r="4" fill="#9b341f"/>
+            </svg>
+          </div>
+          <div class="mascot">
+            <svg viewBox="0 0 96 96" role="img">
+              <ellipse cx="48" cy="60" rx="29" ry="27" fill="#ffe1a5"/>
+              <path d="M29 38 Q24 21 39 26" fill="#7c5bd4"/>
+              <path d="M67 38 Q72 21 57 26" fill="#7c5bd4"/>
+              <circle cx="39" cy="54" r="4" fill="#17211b"/>
+              <circle cx="57" cy="54" r="4" fill="#17211b"/>
+              <circle cx="48" cy="60" r="4" fill="#5a2e12"/>
+              <path d="M41 69 Q48 74 55 69" fill="none" stroke="#17211b" stroke-width="3" stroke-linecap="round"/>
+              <path d="M20 74 Q48 90 76 74" fill="#d75c7a"/>
+            </svg>
+          </div>
+          <div class="mascot">
+            <svg viewBox="0 0 96 96" role="img">
+              <rect x="24" y="38" width="48" height="44" rx="16" fill="#315c9b"/>
+              <circle cx="48" cy="37" r="19" fill="#ffd2a1"/>
+              <path d="M25 29 Q48 10 73 29 L68 38 Q48 29 31 38 Z" fill="#23456f"/>
+              <circle cx="39" cy="39" r="3" fill="#17211b"/>
+              <circle cx="57" cy="39" r="3" fill="#17211b"/>
+              <path d="M42 50 Q48 54 56 50" fill="none" stroke="#17211b" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="48" cy="63" r="9" fill="#ffd45c"/>
+              <path d="M48 58 L50 63 L55 63 L51 66 L53 71 L48 68 L43 71 L45 66 L41 63 L46 63 Z" fill="#a87512"/>
+            </svg>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -317,6 +503,32 @@
         </div>
       </section>
     </div>
+
+    <section class="records-panel" aria-labelledby="records-title">
+      <div class="panel-head">
+        <h2 id="records-title">记录</h2>
+      </div>
+      <div class="panel-body">
+        <div class="records-grid">
+          <label>
+            日期
+            <input id="record-date" value="603" inputmode="numeric" autocomplete="off">
+          </label>
+          <label>
+            密文列表
+            <textarea id="record-codes" autocomplete="off" placeholder="absd, gcXj"></textarea>
+          </label>
+        </div>
+        <div class="copy-row">
+          <button id="add-current-code" type="button">加入当前密文</button>
+          <button id="save-record" type="button">保存记录</button>
+          <button id="export-records" class="secondary" type="button">导出记录文件</button>
+          <button id="clear-record-day" class="secondary" type="button">清空日期</button>
+        </div>
+        <div id="record-status" class="status"></div>
+        <div id="record-list" class="record-list" aria-live="polite"></div>
+      </div>
+    </section>
   </main>
 
   <script>
@@ -347,8 +559,14 @@
     const decodedEnd = document.querySelector("#decoded-end");
     const plainOutput = document.querySelector("#plain-output");
     const decryptStatus = document.querySelector("#decrypt-status");
+    const recordDate = document.querySelector("#record-date");
+    const recordCodes = document.querySelector("#record-codes");
+    const recordStatus = document.querySelector("#record-status");
+    const recordList = document.querySelector("#record-list");
 
     const encoder = new TextEncoder();
+    const RECORD_STORAGE_KEY = "yoursheet.records.v1";
+    let records = {};
 
     function mod(value, modulus) {
       return ((value % modulus) + modulus) % modulus;
@@ -571,6 +789,203 @@
       );
     }
 
+    function storageGet() {
+      try {
+        return window.localStorage.getItem(RECORD_STORAGE_KEY);
+      } catch {
+        return null;
+      }
+    }
+
+    function storageSet(value) {
+      try {
+        window.localStorage.setItem(RECORD_STORAGE_KEY, value);
+      } catch {
+        setStatus(recordStatus, "本地保存不可用，已保留在当前页面", true);
+      }
+    }
+
+    function normalizeDate(value) {
+      const text = String(value ?? "").trim();
+      if (!text) {
+        throw new Error("日期不能为空");
+      }
+
+      const calendarMatch = text.match(/(\d{1,2})\D+(\d{1,2})/);
+      if (calendarMatch) {
+        const month = Number(calendarMatch[1]);
+        const day = Number(calendarMatch[2]);
+        validateMonthDay(month, day);
+        return `${month}${String(day).padStart(2, "0")}`;
+      }
+
+      const digits = text.replace(/\D/g, "");
+      if (digits.length < 3 || digits.length > 4) {
+        throw new Error("日期示例：603");
+      }
+
+      const month = Number(digits.length === 3 ? digits.slice(0, 1) : digits.slice(0, 2));
+      const day = Number(digits.length === 3 ? digits.slice(1) : digits.slice(2));
+      validateMonthDay(month, day);
+      return `${month}${String(day).padStart(2, "0")}`;
+    }
+
+    function validateMonthDay(month, day) {
+      if (month < 1 || month > 12 || day < 1 || day > 31) {
+        throw new Error("日期范围无效");
+      }
+    }
+
+    function parseCodes(value) {
+      const codes = String(value ?? "")
+        .split(/[\s,，;；、{}[\]()]+/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+
+      if (codes.length === 0) {
+        throw new Error("请输入至少一个密文");
+      }
+
+      codes.forEach(codeToValue);
+      return Array.from(new Set(codes));
+    }
+
+    function saveRecords() {
+      storageSet(JSON.stringify(records, null, 2));
+      renderRecords();
+    }
+
+    function renderRecords() {
+      recordList.replaceChildren();
+      const days = Object.keys(records).sort((a, b) => Number(a) - Number(b));
+
+      if (days.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "record-empty";
+        empty.textContent = "暂无记录";
+        recordList.append(empty);
+        return;
+      }
+
+      for (const day of days) {
+        const row = document.createElement("div");
+        row.className = "record-row";
+
+        const date = document.createElement("strong");
+        date.textContent = `${day}:`;
+
+        const codes = document.createElement("span");
+        codes.textContent = `{${records[day].join(", ")}}`;
+
+        row.append(date, codes);
+        recordList.append(row);
+      }
+    }
+
+    async function loadRecords() {
+      let repoRecords = {};
+      if (typeof fetch === "function") {
+        try {
+          const response = await fetch("records.json", { cache: "no-store" });
+          if (response.ok) {
+            repoRecords = await response.json();
+          }
+        } catch {
+          repoRecords = {};
+        }
+      }
+
+      let localRecords = {};
+      const stored = storageGet();
+      if (stored) {
+        try {
+          localRecords = JSON.parse(stored);
+        } catch {
+          localRecords = {};
+        }
+      }
+
+      records = mergeRecords(repoRecords, localRecords);
+      renderRecords();
+    }
+
+    function mergeRecords(...sources) {
+      const merged = {};
+      for (const source of sources) {
+        if (!source || typeof source !== "object") {
+          continue;
+        }
+        for (const [day, values] of Object.entries(source)) {
+          if (!Array.isArray(values)) {
+            continue;
+          }
+          let normalizedDay;
+          try {
+            normalizedDay = normalizeDate(day);
+          } catch {
+            continue;
+          }
+          const nextValues = values.map(String).filter((value) => {
+            try {
+              codeToValue(value);
+              return true;
+            } catch {
+              return false;
+            }
+          });
+          merged[normalizedDay] = Array.from(new Set([...(merged[normalizedDay] || []), ...nextValues]));
+        }
+      }
+      return merged;
+    }
+
+    function addRecord() {
+      try {
+        const day = normalizeDate(recordDate.value);
+        const codes = parseCodes(recordCodes.value);
+        records[day] = Array.from(new Set([...(records[day] || []), ...codes]));
+        saveRecords();
+        setStatus(recordStatus, "已保存");
+      } catch (error) {
+        setStatus(recordStatus, error.message, true);
+      }
+    }
+
+    function addCurrentCodeToInput() {
+      const code = cipherOutput.textContent.trim();
+      if (code === "----") {
+        setStatus(recordStatus, "当前密文不可用", true);
+        return;
+      }
+
+      const existing = recordCodes.value.trim();
+      recordCodes.value = existing ? `${existing}, ${code}` : code;
+      setStatus(recordStatus, "已加入");
+    }
+
+    function clearRecordDay() {
+      try {
+        const day = normalizeDate(recordDate.value);
+        delete records[day];
+        saveRecords();
+        setStatus(recordStatus, "已清空");
+      } catch (error) {
+        setStatus(recordStatus, error.message, true);
+      }
+    }
+
+    function exportRecords() {
+      const payload = `${JSON.stringify(records, null, 2)}\n`;
+      const blob = new Blob([payload], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "records.json";
+      link.click();
+      URL.revokeObjectURL(url);
+      setStatus(recordStatus, "已导出");
+    }
+
     [beginInput, endInput, noEndInput].forEach((element) => {
       element.addEventListener("input", updateEncryption);
       element.addEventListener("change", updateEncryption);
@@ -593,8 +1008,14 @@
       writeClipboard(plainOutput.textContent, decryptStatus);
     });
 
+    document.querySelector("#add-current-code").addEventListener("click", addCurrentCodeToInput);
+    document.querySelector("#save-record").addEventListener("click", addRecord);
+    document.querySelector("#export-records").addEventListener("click", exportRecords);
+    document.querySelector("#clear-record-day").addEventListener("click", clearRecordDay);
+
     updateEncryption();
     updateDecryption();
+    loadRecords();
   </script>
 </body>
 </html>
