@@ -35,15 +35,97 @@
       overflow-x: hidden;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        linear-gradient(135deg, rgba(13, 111, 99, 0.12), rgba(215, 92, 122, 0.08) 36%, rgba(53, 126, 199, 0.08)),
+        linear-gradient(135deg, rgba(13, 111, 99, 0.1), rgba(215, 92, 122, 0.08) 36%, rgba(53, 126, 199, 0.08)),
         var(--bg);
       color: var(--ink);
+    }
+
+    .code-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(255, 212, 92, 0.18), transparent 24%),
+        radial-gradient(circle at 86% 28%, rgba(215, 92, 122, 0.14), transparent 30%),
+        linear-gradient(135deg, #eaf3ed 0%, #f8f3ec 48%, #e8f1f8 100%);
+    }
+
+    .code-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0.22)),
+        linear-gradient(180deg, rgba(246, 247, 242, 0.12), rgba(246, 247, 242, 0.62));
+    }
+
+    .code-stream {
+      position: absolute;
+      top: -140vh;
+      display: grid;
+      gap: 8px;
+      width: max-content;
+      color: rgba(13, 111, 99, 0.22);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1;
+      letter-spacing: 0;
+      white-space: nowrap;
+      filter: blur(0.1px);
+      animation: codeFall linear infinite;
+    }
+
+    .code-token {
+      display: inline-block;
+      transform: rotate(var(--tilt, 0deg));
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.42);
+    }
+
+    .code-token.poop {
+      color: rgba(155, 52, 31, 0.34);
+      font-size: 24px;
+      filter: saturate(1.18);
+    }
+
+    .code-token.code-shit {
+      color: rgba(168, 117, 18, 0.36);
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .code-token.code-poop {
+      color: rgba(168, 117, 18, 0.32);
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 0.82;
+      white-space: pre;
+    }
+
+    @keyframes codeFall {
+      from {
+        transform: translateY(-12vh);
+      }
+
+      to {
+        transform: translateY(260vh);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .code-stream {
+        animation: none;
+        opacity: 0.32;
+      }
     }
 
     main {
       width: min(1120px, calc(100vw - 32px));
       margin: 0 auto;
       padding: 32px 0;
+      position: relative;
+      z-index: 2;
     }
 
     header {
@@ -141,40 +223,10 @@
       flex-direction: column;
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 24px 18px 30px 20px;
+      border-radius: 8px;
       box-shadow: var(--shadow);
       min-width: 0;
       isolation: isolate;
-    }
-
-    section::before,
-    section::after {
-      content: "";
-      position: absolute;
-      pointer-events: none;
-      z-index: 1;
-      background: var(--panel);
-      border: 1px solid var(--line);
-    }
-
-    section::before {
-      left: 8%;
-      bottom: -13px;
-      width: 58%;
-      height: 28px;
-      border-top: 0;
-      border-radius: 0 0 28px 28px;
-      clip-path: polygon(0 0, 18% 0, 22% 62%, 32% 62%, 36% 0, 58% 0, 64% 100%, 76% 100%, 82% 0, 100% 0, 100% 42%, 0 42%);
-    }
-
-    section::after {
-      right: -9px;
-      top: 22%;
-      width: 24px;
-      height: 46%;
-      border-left: 0;
-      border-radius: 0 24px 24px 0;
-      clip-path: polygon(0 0, 46% 0, 46% 16%, 100% 22%, 100% 38%, 44% 44%, 44% 62%, 82% 69%, 82% 88%, 0 100%);
     }
 
     .panel-head {
@@ -477,10 +529,6 @@
         min-height: 62px;
       }
 
-      section::after {
-        display: none;
-      }
-
       .record-row {
         grid-template-columns: 1fr;
         gap: 4px;
@@ -489,6 +537,8 @@
   </style>
 </head>
 <body>
+  <div id="code-bg" class="code-bg" aria-hidden="true"></div>
+
   <main>
     <header>
       <div class="hero">
@@ -696,6 +746,7 @@
     const recordList = document.querySelector("#record-list");
     const peekAlert = document.querySelector("#peek-alert");
     const peekClose = document.querySelector("#peek-close");
+    const codeBg = document.querySelector("#code-bg");
 
     const encoder = new TextEncoder();
     const RECORD_STORAGE_KEY = "yoursheet.records.v1";
@@ -948,6 +999,60 @@
       );
     }
 
+    function createCodeBackground() {
+      if (!codeBg) {
+        return;
+      }
+
+      const baseTokens = [
+        "const", "let", "await", "return", "map()", "push()", "fn()", "{}",
+        "[]", "=>", "&&", "||", "if", "else", "while", "true", "false",
+        "null", "void", "new", "class", "try", "catch", "import", "export"
+      ];
+      const rareTokens = [
+        "💩", "s + h + i + t", "<shit/>", "{shit:true}", "sh_it++",
+        "return 💩", "s.h.i.t()", "/* shit */", "shit.map()"
+      ];
+      const codePoops = [
+        "  +\n+  +\n + +\n+     +",
+        "  ++\n +  +\n+ ++ +\n ++++",
+        "   +\n  +++\n + + +\n+  +  +",
+        " +++\n+ + +\n +++\n+   +"
+      ];
+
+      codeBg.replaceChildren();
+      const width = window.innerWidth || 1024;
+      const streamCount = width < 720 ? 16 : 30;
+
+      for (let i = 0; i < streamCount; i += 1) {
+        const stream = document.createElement("div");
+        stream.className = "code-stream";
+        stream.style.left = `${(i / streamCount) * 100 + Math.random() * 2.2}%`;
+        stream.style.animationDuration = `${18 + Math.random() * 24}s`;
+        stream.style.animationDelay = `${Math.random() * -32}s`;
+        stream.style.opacity = `${0.46 + Math.random() * 0.34}`;
+
+        const tokenCount = 30 + Math.floor(Math.random() * 18);
+        for (let j = 0; j < tokenCount; j += 1) {
+          const token = document.createElement("span");
+          const roll = Math.random();
+          if (roll < 0.025) {
+            token.textContent = codePoops[Math.floor(Math.random() * codePoops.length)];
+            token.className = "code-token code-poop";
+          } else {
+            const isRare = roll < 0.1;
+            const values = isRare ? rareTokens : baseTokens;
+            token.textContent = values[Math.floor(Math.random() * values.length)];
+            token.className = `code-token${isRare ? (token.textContent === "💩" || token.textContent.includes("💩") ? " poop" : " code-shit") : ""}`;
+          }
+          token.style.setProperty("--tilt", `${Math.random() * 8 - 4}deg`);
+          stream.append(token);
+        }
+
+        codeBg.append(stream);
+      }
+    }
+
     function storageGet() {
       try {
         return window.localStorage.getItem(RECORD_STORAGE_KEY);
@@ -1184,6 +1289,13 @@
       }
     });
 
+    let backgroundResizeTimer = 0;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(backgroundResizeTimer);
+      backgroundResizeTimer = window.setTimeout(createCodeBackground, 180);
+    });
+
+    createCodeBackground();
     updateEncryption();
     updateDecryption();
     loadRecords();
