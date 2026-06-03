@@ -9,7 +9,6 @@ high-security cryptography.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from hashlib import blake2b
 from math import gcd
 from string import ascii_lowercase, ascii_uppercase
 import re
@@ -19,7 +18,13 @@ BASE = len(ALPHABET)
 CODE_LENGTH = 4
 MODULUS = BASE**CODE_LENGTH
 MINUTES_PER_DAY = 24 * 60
-PAIR_COUNT = MINUTES_PER_DAY * MINUTES_PER_DAY
+END_BUCKETS = MINUTES_PER_DAY + 1
+NO_END = None
+RANGE_COUNT = MINUTES_PER_DAY * END_BUCKETS
+PAIR_COUNT = RANGE_COUNT
+FNV64_OFFSET = 14695981039346656037
+FNV64_PRIME = 1099511628211
+FNV64_MASK = (1 << 64) - 1
 
 ANCHOR_KEY = "dog"
 ANCHOR_START = "19:26"
@@ -34,7 +39,7 @@ class TimeRange:
     """A decoded time range represented as minute offsets from midnight."""
 
     start_minute: int
-    end_minute: int
+    end_minute: int | None
 
     @property
     def start(self) -> str:
@@ -42,7 +47,13 @@ class TimeRange:
 
     @property
     def end(self) -> str:
+        if self.end_minute is NO_END:
+            return "N/A"
         return format_time(self.end_minute)
+
+    @property
+    def has_end(self) -> bool:
+        return self.end_minute is not NO_END
 
     def __str__(self) -> str:
         return f"{self.start}-{self.end}"
@@ -79,11 +90,15 @@ def format_time(minute: int) -> str:
     return f"{hour:02d}:{minute_part:02d}"
 
 
-def encrypt_interval(start: str | int, end: str | int, key: str = ANCHOR_KEY) -> str:
+def encrypt_interval(
+    start: str | int,
+    end: str | int | None = NO_END,
+    key: str = ANCHOR_KEY,
+) -> str:
     """Encrypt a time range into a four-letter code."""
 
     start_minute = parse_time(start)
-    end_minute = parse_time(end)
+    end_minute = parse_optional_end(end)
     rank = _rank_interval(start_minute, end_minute)
     multiplier, offset = _key_parameters(key)
     return _value_to_code((multiplier * rank + offset) % MODULUS)
@@ -97,21 +112,34 @@ def decrypt_code(code: str, key: str = ANCHOR_KEY) -> TimeRange:
     inverse = pow(multiplier, -1, MODULUS)
     rank = ((value - offset) * inverse) % MODULUS
 
-    if rank >= PAIR_COUNT:
+    if rank >= RANGE_COUNT:
         raise ValueError("ciphertext is not a valid TimeR code for this key")
 
     start_minute, end_minute = _unrank_interval(rank)
     return TimeRange(start_minute, end_minute)
 
 
-def _rank_interval(start_minute: int, end_minute: int) -> int:
-    return start_minute * MINUTES_PER_DAY + end_minute
+def parse_optional_end(value: str | int | None) -> int | None:
+    """Parse an end time, accepting blank/N/A as no follow-up."""
+
+    if value is NO_END:
+        return NO_END
+    if isinstance(value, str) and value.strip().lower() in {"", "n/a", "na", "none", "null", "-"}:
+        return NO_END
+    return parse_time(value)
 
 
-def _unrank_interval(rank: int) -> tuple[int, int]:
-    if not 0 <= rank < PAIR_COUNT:
+def _rank_interval(start_minute: int, end_minute: int | None) -> int:
+    end_bucket = MINUTES_PER_DAY if end_minute is NO_END else end_minute
+    return start_minute * END_BUCKETS + end_bucket
+
+
+def _unrank_interval(rank: int) -> tuple[int, int | None]:
+    if not 0 <= rank < RANGE_COUNT:
         raise ValueError("rank is outside the supported time range space")
-    return divmod(rank, MINUTES_PER_DAY)
+    start_minute, end_bucket = divmod(rank, END_BUCKETS)
+    end_minute = NO_END if end_bucket == MINUTES_PER_DAY else end_bucket
+    return start_minute, end_minute
 
 
 def _key_parameters(key: str) -> tuple[int, int]:
@@ -140,9 +168,12 @@ def _hash_int(key: str, purpose: str) -> int:
     if not isinstance(key, str) or not key:
         raise ValueError("key must be a non-empty string")
 
+    value = FNV64_OFFSET
     payload = f"TimeR:{purpose}:{key}".encode("utf-8")
-    digest = blake2b(payload, digest_size=16).digest()
-    return int.from_bytes(digest, "big")
+    for byte in payload:
+        value ^= byte
+        value = (value * FNV64_PRIME) & FNV64_MASK
+    return value
 
 
 def _value_to_code(value: int) -> str:

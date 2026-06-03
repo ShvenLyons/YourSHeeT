@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TimeR</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f2;
+      --ink: #17211b;
+      --muted: #5f6d65;
+      --line: #cbd4cd;
+      --panel: #ffffff;
+      --accent: #0d6f63;
+      --accent-dark: #084d46;
+      --warn: #9b341f;
+      --field: #f9fbf8;
+      --shadow: 0 18px 50px rgba(32, 47, 39, 0.13);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        linear-gradient(135deg, rgba(13, 111, 99, 0.12), rgba(151, 83, 40, 0.06) 42%, rgba(55, 93, 142, 0.08)),
+        var(--bg);
+      color: var(--ink);
+    }
+
+    main {
+      width: min(1120px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 32px 0;
+    }
+
+    header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 6vw, 72px);
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    .subhead {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 18px 0;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .panel-body {
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    input {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--field);
+      color: var(--ink);
+      font: inherit;
+      font-size: 17px;
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(13, 111, 99, 0.14);
+    }
+
+    input:disabled {
+      color: var(--muted);
+      background: #edf1ed;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 12px;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px 8px 12px;
+      color: var(--ink);
+      background: #f4f7f3;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .toggle input {
+      width: 22px;
+      min-height: 22px;
+      accent-color: var(--accent);
+    }
+
+    .output {
+      display: grid;
+      gap: 6px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+    }
+
+    .output span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .result {
+      display: flex;
+      align-items: center;
+      min-height: 56px;
+      border-radius: 8px;
+      background: #10251f;
+      color: #eef9f5;
+      padding: 12px 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: clamp(22px, 4vw, 34px);
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .status {
+      min-height: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .status.error {
+      color: var(--warn);
+      font-weight: 700;
+    }
+
+    .copy-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      min-height: 38px;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      padding: 8px 12px;
+      font: inherit;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: transparent;
+      color: var(--accent-dark);
+    }
+
+    footer {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    @media (max-width: 780px) {
+      main {
+        width: min(100vw - 20px, 640px);
+        padding: 18px 0;
+      }
+
+      header,
+      .workspace,
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        display: grid;
+        align-items: start;
+      }
+
+      .badge {
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>TimeR</h1>
+        <p class="subhead">四字母时间段加密工具</p>
+      </div>
+      <div class="badge">无碰撞空间：1440 x 1441 &lt; 52^4</div>
+    </header>
+
+    <div class="workspace">
+      <section aria-labelledby="encrypt-title">
+        <div class="panel-head">
+          <h2 id="encrypt-title">加密</h2>
+        </div>
+        <div class="panel-body">
+          <label>
+            密钥
+            <input id="enc-key" value="dog" autocomplete="off">
+          </label>
+          <div class="row">
+            <label>
+              Begin
+              <input id="begin" value="19:26" inputmode="numeric" autocomplete="off">
+            </label>
+            <label>
+              End
+              <input id="end" value="19:30" inputmode="numeric" autocomplete="off">
+            </label>
+          </div>
+          <label class="toggle">
+            End 为 N/A
+            <input id="no-end" type="checkbox">
+          </label>
+          <div class="output">
+            <span>密文</span>
+            <div id="cipher-output" class="result">absd</div>
+            <div id="encrypt-status" class="status"></div>
+          </div>
+          <div class="copy-row">
+            <button id="copy-code" type="button">复制密文</button>
+            <button id="use-code" class="secondary" type="button">填入解密</button>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="decrypt-title">
+        <div class="panel-head">
+          <h2 id="decrypt-title">解密</h2>
+        </div>
+        <div class="panel-body">
+          <label>
+            密钥
+            <input id="dec-key" value="dog" autocomplete="off">
+          </label>
+          <label>
+            密文
+            <input id="cipher-input" value="absd" maxlength="4" autocomplete="off">
+          </label>
+          <div class="row">
+            <label>
+              Begin
+              <input id="decoded-begin" readonly>
+            </label>
+            <label>
+              End
+              <input id="decoded-end" readonly>
+            </label>
+          </div>
+          <div class="output">
+            <span>明文</span>
+            <div id="plain-output" class="result">19:26-19:30</div>
+            <div id="decrypt-status" class="status"></div>
+          </div>
+          <div class="copy-row">
+            <button id="copy-plain" type="button">复制明文</button>
+            <button id="sync-key" class="secondary" type="button">同步密钥</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      明文编号为 <code>begin * 1441 + endBucket</code>，其中 <code>endBucket=1440</code> 表示 <code>N/A</code>。
+      密钥生成的仿射置换在 <code>52^4</code> 空间内可逆，因此不同明文不会得到同一个密文。
+    </footer>
+  </main>
+
+  <script>
+    const ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const BASE = ALPHABET.length;
+    const CODE_LENGTH = 4;
+    const MODULUS = BASE ** CODE_LENGTH;
+    const MINUTES_PER_DAY = 24 * 60;
+    const END_BUCKETS = MINUTES_PER_DAY + 1;
+    const RANGE_COUNT = MINUTES_PER_DAY * END_BUCKETS;
+    const FNV64_OFFSET = 14695981039346656037n;
+    const FNV64_PRIME = 1099511628211n;
+    const FNV64_MASK = (1n << 64n) - 1n;
+
+    const ANCHOR_KEY = "dog";
+    const ANCHOR_START = "19:26";
+    const ANCHOR_END = "19:30";
+    const ANCHOR_CODE = "absd";
+
+    const encKey = document.querySelector("#enc-key");
+    const decKey = document.querySelector("#dec-key");
+    const beginInput = document.querySelector("#begin");
+    const endInput = document.querySelector("#end");
+    const noEndInput = document.querySelector("#no-end");
+    const cipherOutput = document.querySelector("#cipher-output");
+    const encryptStatus = document.querySelector("#encrypt-status");
+    const cipherInput = document.querySelector("#cipher-input");
+    const decodedBegin = document.querySelector("#decoded-begin");
+    const decodedEnd = document.querySelector("#decoded-end");
+    const plainOutput = document.querySelector("#plain-output");
+    const decryptStatus = document.querySelector("#decrypt-status");
+
+    const encoder = new TextEncoder();
+
+    function mod(value, modulus) {
+      return ((value % modulus) + modulus) % modulus;
+    }
+
+    function gcd(a, b) {
+      while (b !== 0) {
+        const temp = b;
+        b = a % b;
+        a = temp;
+      }
+      return Math.abs(a);
+    }
+
+    function modInverse(value, modulus) {
+      let oldR = value;
+      let r = modulus;
+      let oldS = 1;
+      let s = 0;
+
+      while (r !== 0) {
+        const quotient = Math.floor(oldR / r);
+        [oldR, r] = [r, oldR - quotient * r];
+        [oldS, s] = [s, oldS - quotient * s];
+      }
+
+      if (oldR !== 1) {
+        throw new Error("密钥参数不可逆");
+      }
+
+      return mod(oldS, modulus);
+    }
+
+    function hashInt(key, purpose) {
+      if (typeof key !== "string" || key.length === 0) {
+        throw new Error("密钥不能为空");
+      }
+
+      let value = FNV64_OFFSET;
+      const bytes = encoder.encode(`TimeR:${purpose}:${key}`);
+      for (const byte of bytes) {
+        value ^= BigInt(byte);
+        value = (value * FNV64_PRIME) & FNV64_MASK;
+      }
+      return value;
+    }
+
+    function keyMultiplier(key) {
+      let candidate = Number(hashInt(key, "multiplier") % BigInt(MODULUS));
+      candidate |= 1;
+
+      while (gcd(candidate, MODULUS) !== 1) {
+        candidate = (candidate + 2) % MODULUS;
+        if (candidate === 0) {
+          candidate = 1;
+        }
+      }
+
+      return candidate;
+    }
+
+    function rawOffset(key) {
+      return Number(hashInt(key, "offset") % BigInt(MODULUS));
+    }
+
+    function keyParameters(key) {
+      const multiplier = keyMultiplier(key);
+      const offset = mod(rawOffset(key) + ANCHOR_CALIBRATION, MODULUS);
+      return { multiplier, offset };
+    }
+
+    function parseTime(value) {
+      const text = String(value);
+      const match = text.match(/^\s*(\d{1,2})\s*(?::|：)\s*(\d{1,2})\s*$/);
+      if (!match) {
+        throw new Error("时间格式应为 HH:MM");
+      }
+
+      const hour = Number(match[1]);
+      const minute = Number(match[2]);
+      if (hour > 23 || minute > 59) {
+        throw new Error("时间范围应为 00:00 到 23:59");
+      }
+
+      return hour * 60 + minute;
+    }
+
+    function parseOptionalEnd(value) {
+      const normalized = String(value ?? "").trim().toLowerCase();
+      if (["", "n/a", "na", "none", "null", "-"].includes(normalized)) {
+        return null;
+      }
+      return parseTime(value);
+    }
+
+    function formatTime(value) {
+      const hour = Math.floor(value / 60);
+      const minute = value % 60;
+      return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+    }
+
+    function rankInterval(startMinute, endMinute) {
+      const endBucket = endMinute === null ? MINUTES_PER_DAY : endMinute;
+      return startMinute * END_BUCKETS + endBucket;
+    }
+
+    function unrankInterval(rank) {
+      if (rank < 0 || rank >= RANGE_COUNT) {
+        throw new Error("该密文不属于当前密钥的有效时间空间");
+      }
+      const startMinute = Math.floor(rank / END_BUCKETS);
+      const endBucket = rank % END_BUCKETS;
+      return {
+        start: startMinute,
+        end: endBucket === MINUTES_PER_DAY ? null : endBucket
+      };
+    }
+
+    function valueToCode(value) {
+      if (value < 0 || value >= MODULUS) {
+        throw new Error("密文数值超出范围");
+      }
+      const chars = [];
+      let current = value;
+      for (let i = 0; i < CODE_LENGTH; i += 1) {
+        const index = current % BASE;
+        current = Math.floor(current / BASE);
+        chars.push(ALPHABET[index]);
+      }
+      return chars.reverse().join("");
+    }
+
+    function codeToValue(code) {
+      if (code.length !== CODE_LENGTH) {
+        throw new Error("密文必须是 4 个字母");
+      }
+      let value = 0;
+      for (const char of code) {
+        const index = ALPHABET.indexOf(char);
+        if (index < 0) {
+          throw new Error("密文只能使用 a-zA-Z");
+        }
+        value = value * BASE + index;
+      }
+      return value;
+    }
+
+    function calibration() {
+      const anchorRank = rankInterval(parseTime(ANCHOR_START), parseTime(ANCHOR_END));
+      const targetValue = codeToValue(ANCHOR_CODE);
+      const anchorValue = keyMultiplier(ANCHOR_KEY) * anchorRank + rawOffset(ANCHOR_KEY);
+      return mod(targetValue - anchorValue, MODULUS);
+    }
+
+    const ANCHOR_CALIBRATION = calibration();
+
+    function encryptInterval(start, end, key) {
+      const startMinute = parseTime(start);
+      const endMinute = parseOptionalEnd(end);
+      const rank = rankInterval(startMinute, endMinute);
+      const { multiplier, offset } = keyParameters(key);
+      return valueToCode(mod(multiplier * rank + offset, MODULUS));
+    }
+
+    function decryptCode(code, key) {
+      const value = codeToValue(code.trim());
+      const { multiplier, offset } = keyParameters(key);
+      const inverse = modInverse(multiplier, MODULUS);
+      const rank = mod((value - offset) * inverse, MODULUS);
+      return unrankInterval(rank);
+    }
+
+    function setStatus(element, message, isError = false) {
+      element.textContent = message;
+      element.classList.toggle("error", isError);
+    }
+
+    function updateEncryption() {
+      endInput.disabled = noEndInput.checked;
+      if (noEndInput.checked) {
+        endInput.value = "";
+      }
+
+      try {
+        const endValue = noEndInput.checked ? null : endInput.value;
+        const code = encryptInterval(beginInput.value, endValue, encKey.value);
+        cipherOutput.textContent = code;
+        setStatus(encryptStatus, "有效");
+      } catch (error) {
+        cipherOutput.textContent = "----";
+        setStatus(encryptStatus, error.message, true);
+      }
+    }
+
+    function updateDecryption() {
+      try {
+        const decoded = decryptCode(cipherInput.value, decKey.value);
+        const begin = formatTime(decoded.start);
+        const end = decoded.end === null ? "N/A" : formatTime(decoded.end);
+        decodedBegin.value = begin;
+        decodedEnd.value = end;
+        plainOutput.textContent = `${begin}-${end}`;
+        setStatus(decryptStatus, "有效");
+      } catch (error) {
+        decodedBegin.value = "";
+        decodedEnd.value = "";
+        plainOutput.textContent = "----";
+        setStatus(decryptStatus, error.message, true);
+      }
+    }
+
+    function writeClipboard(text, statusElement) {
+      if (!navigator.clipboard) {
+        setStatus(statusElement, "当前浏览器不支持剪贴板", true);
+        return;
+      }
+      navigator.clipboard.writeText(text).then(
+        () => setStatus(statusElement, "已复制"),
+        () => setStatus(statusElement, "复制失败", true)
+      );
+    }
+
+    [encKey, beginInput, endInput, noEndInput].forEach((element) => {
+      element.addEventListener("input", updateEncryption);
+      element.addEventListener("change", updateEncryption);
+    });
+
+    [decKey, cipherInput].forEach((element) => {
+      element.addEventListener("input", updateDecryption);
+    });
+
+    document.querySelector("#copy-code").addEventListener("click", () => {
+      writeClipboard(cipherOutput.textContent, encryptStatus);
+    });
+
+    document.querySelector("#use-code").addEventListener("click", () => {
+      decKey.value = encKey.value;
+      cipherInput.value = cipherOutput.textContent;
+      updateDecryption();
+    });
+
+    document.querySelector("#copy-plain").addEventListener("click", () => {
+      writeClipboard(plainOutput.textContent, decryptStatus);
+    });
+
+    document.querySelector("#sync-key").addEventListener("click", () => {
+      decKey.value = encKey.value;
+      updateDecryption();
+    });
+
+    updateEncryption();
+    updateDecryption();
+  </script>
+</body>
+</html>

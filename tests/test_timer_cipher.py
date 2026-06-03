@@ -17,6 +17,7 @@ class TimeCipherTests(unittest.TestCase):
             ("08:15", "09:45"),
             ("19:26", "19:30"),
             ("23:59", "00:00"),
+            ("19:26", None),
         ]
 
         for key in ["dog", "cat", "a longer shared key"]:
@@ -27,11 +28,27 @@ class TimeCipherTests(unittest.TestCase):
                     self.assertTrue(code.isalpha())
                     decoded = decrypt_code(code, key)
                     self.assertEqual(decoded.start, start)
-                    self.assertEqual(decoded.end, end)
+                    self.assertEqual(decoded.end, "N/A" if end is None else end)
+
+    def test_no_end_has_distinct_ciphertext(self):
+        no_end = encrypt_interval("19:26", None, "dog")
+        with_end = encrypt_interval("19:26", "19:30", "dog")
+        self.assertNotEqual(no_end, with_end)
+        self.assertEqual(str(decrypt_code(no_end, "dog")), "19:26-N/A")
 
     def test_parser_accepts_spaces_around_colon(self):
         self.assertEqual(parse_time("19: 26"), parse_time("19:26"))
         self.assertEqual(parse_time(" 19 : 26 "), parse_time("19:26"))
+
+    def test_selected_ranges_do_not_collide(self):
+        seen = set()
+        for hour in range(24):
+            for minute in (0, 15, 30, 45):
+                start = f"{hour:02d}:{minute:02d}"
+                for end in ["00:00", "12:00", "23:59", None]:
+                    code = encrypt_interval(start, end, "dog")
+                    self.assertNotIn(code, seen)
+                    seen.add(code)
 
     def test_rejects_invalid_inputs(self):
         with self.assertRaises(ValueError):

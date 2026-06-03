@@ -7,7 +7,7 @@ name = "timer-cipher"
 version = "0.1.0"
 description = "A tiny reversible four-letter keyed cipher for minute-level time ranges."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "TimeR" }]
 keywords = ["time", "cipher", "format-preserving", "cli"]

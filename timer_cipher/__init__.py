@@ -7,6 +7,7 @@ from .core import (
     decrypt_code,
     encrypt_interval,
     format_time,
+    parse_optional_end,
     parse_time,
 )
 
@@ -17,5 +18,6 @@ __all__ = [
     "decrypt_code",
     "encrypt_interval",
     "format_time",
+    "parse_optional_end",
     "parse_time",
 ]

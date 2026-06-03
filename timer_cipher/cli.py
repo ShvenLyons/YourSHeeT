@@ -11,14 +11,18 @@ from .core import decrypt_code, encrypt_interval
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="timer",
-        description="Encrypt and decrypt HH:MM-HH:MM ranges as four-letter codes.",
+        description="Encrypt and decrypt HH:MM-HH:MM or HH:MM-N/A ranges as four-letter codes.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     encrypt = subparsers.add_parser("encrypt", help="Encrypt a time range.")
     encrypt.add_argument("--key", default="dog", help="Shared secret key.")
     encrypt.add_argument("--start", required=True, help="Start time, for example 19:26.")
-    encrypt.add_argument("--end", required=True, help="End time, for example 19:30.")
+    encrypt.add_argument(
+        "--end",
+        default=None,
+        help="End time, for example 19:30. Omit it or pass N/A when there is no follow-up.",
+    )
 
     decrypt = subparsers.add_parser("decrypt", help="Decrypt a four-letter code.")
     decrypt.add_argument("--key", default="dog", help="Shared secret key.")
