@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Sacred warning">
+  <rect width="128" height="128" rx="16" fill="#170c17"/>
+  <path d="M64 17l49 87H15l49-87Z" fill="#251420" stroke="#f2d57a" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M64 42v30" stroke="#f2d57a" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="64" cy="87" r="6" fill="#f2d57a"/>
+  <path d="M35 101c19-11 39-11 58 0" stroke="#f0d7b0" stroke-width="4" stroke-linecap="round" opacity=".75"/>
+</svg>

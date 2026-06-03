@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Membrane eye">
+  <rect width="128" height="128" rx="16" fill="#170c17"/>
+  <path d="M15 66C31 36 52 26 64 26s33 10 49 40c-16 28-37 38-49 38S31 94 15 66Z" fill="#5b2735" stroke="#d59aa2" stroke-width="4"/>
+  <circle cx="64" cy="66" r="24" fill="#2a1324" stroke="#f0d7b0" stroke-width="4"/>
+  <circle cx="64" cy="66" r="9" fill="#d8b15d"/>
+  <path d="M23 48c12 6 23 8 34 6M71 54c14 2 27-2 38-10M25 84c14-7 25-8 38-4M74 82c12 0 23 4 34 11" fill="none" stroke="#b66e81" stroke-width="4" stroke-linecap="round" opacity=".75"/>
+</svg>
