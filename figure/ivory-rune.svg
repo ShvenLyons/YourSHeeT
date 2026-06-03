@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Ivory rune">
-  <rect width="128" height="128" rx="16" fill="#170c17"/>
-  <path d="M25 25h78v78H25z" fill="#21121f" stroke="#d59aa2" stroke-width="4"/>
-  <path d="M64 20v88M38 40l52 49M90 40L38 89" stroke="#f0d7b0" stroke-width="5" stroke-linecap="round"/>
-  <circle cx="64" cy="64" r="18" fill="none" stroke="#b66e81" stroke-width="5"/>
-  <circle cx="64" cy="64" r="5" fill="#d8b15d"/>
-</svg>

@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Sinew grid">
-  <rect width="128" height="128" rx="16" fill="#160c15"/>
-  <path d="M22 101c28-10 18-70 55-73 18-1 27 10 36 24" fill="none" stroke="#c07c8d" stroke-width="10" stroke-linecap="round"/>
-  <path d="M33 93c16-8 25-19 28-34M63 77c18-6 29-18 34-35M44 37c21 11 42 16 64 15" fill="none" stroke="#f0d7b0" stroke-width="4" stroke-linecap="round" opacity=".75"/>
-  <circle cx="36" cy="86" r="4" fill="#d8b15d"/>
-  <circle cx="59" cy="59" r="3" fill="#d8b15d"/>
-  <circle cx="90" cy="44" r="4" fill="#d8b15d"/>
-</svg>
