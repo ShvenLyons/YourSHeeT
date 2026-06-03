@@ -11,7 +11,7 @@
       --ink: #17211b;
       --muted: #5f6d65;
       --line: #cbd4cd;
-      --panel: #ffffff;
+      --panel: rgba(255, 255, 255, 0.94);
       --accent: #0d6f63;
       --accent-dark: #084d46;
       --ochre: #a87512;
@@ -57,8 +57,8 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(90deg, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0.22)),
-        linear-gradient(180deg, rgba(246, 247, 242, 0.12), rgba(246, 247, 242, 0.62));
+        linear-gradient(90deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.08)),
+        linear-gradient(180deg, rgba(246, 247, 242, 0.02), rgba(246, 247, 242, 0.38));
     }
 
     .code-stream {
@@ -67,9 +67,9 @@
       display: grid;
       gap: 8px;
       width: max-content;
-      color: rgba(13, 111, 99, 0.22);
+      color: rgba(13, 111, 99, 0.38);
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1;
       letter-spacing: 0;
       white-space: nowrap;
@@ -80,23 +80,23 @@
     .code-token {
       display: inline-block;
       transform: rotate(var(--tilt, 0deg));
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.42);
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
     }
 
     .code-token.poop {
-      color: rgba(155, 52, 31, 0.34);
+      color: rgba(155, 52, 31, 0.55);
       font-size: 24px;
       filter: saturate(1.18);
     }
 
     .code-token.code-shit {
-      color: rgba(168, 117, 18, 0.36);
+      color: rgba(168, 117, 18, 0.58);
       font-weight: 800;
       font-size: 15px;
     }
 
     .code-token.code-poop {
-      color: rgba(168, 117, 18, 0.32);
+      color: rgba(168, 117, 18, 0.54);
       font-size: 17px;
       font-weight: 900;
       line-height: 0.82;
@@ -200,7 +200,7 @@
       min-height: 86px;
       border: 1px solid rgba(203, 212, 205, 0.9);
       border-radius: 8px;
-      background: rgba(255, 255, 255, 0.76);
+      background: rgba(255, 255, 255, 0.88);
       box-shadow: 0 10px 26px rgba(32, 47, 39, 0.08);
     }
 
@@ -224,7 +224,8 @@
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 8px;
-      box-shadow: var(--shadow);
+      backdrop-filter: blur(5px);
+      box-shadow: 0 20px 58px rgba(32, 47, 39, 0.18);
       min-width: 0;
       isolation: isolate;
     }
@@ -268,7 +269,7 @@
       min-height: 44px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: var(--field);
+      background: rgba(249, 251, 248, 0.94);
       color: var(--ink);
       font: inherit;
       font-size: 17px;
@@ -309,7 +310,7 @@
       border-radius: 8px;
       padding: 8px 10px 8px 12px;
       color: var(--ink);
-      background: #f4f7f3;
+      background: rgba(244, 247, 243, 0.94);
       font-size: 14px;
       font-weight: 700;
     }
@@ -399,7 +400,7 @@
       min-height: 80px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #fbfcf9;
+      background: rgba(251, 252, 249, 0.94);
       padding: 10px;
     }
 
@@ -1022,7 +1023,7 @@
 
       codeBg.replaceChildren();
       const width = window.innerWidth || 1024;
-      const streamCount = width < 720 ? 16 : 30;
+      const streamCount = width < 720 ? 18 : 34;
 
       for (let i = 0; i < streamCount; i += 1) {
         const stream = document.createElement("div");
@@ -1030,7 +1031,7 @@
         stream.style.left = `${(i / streamCount) * 100 + Math.random() * 2.2}%`;
         stream.style.animationDuration = `${18 + Math.random() * 24}s`;
         stream.style.animationDelay = `${Math.random() * -32}s`;
-        stream.style.opacity = `${0.46 + Math.random() * 0.34}`;
+        stream.style.opacity = `${0.6 + Math.random() * 0.32}`;
 
         const tokenCount = 30 + Math.floor(Math.random() * 18);
         for (let j = 0; j < tokenCount; j += 1) {
