@@ -32,6 +32,7 @@
     body {
       margin: 0;
       min-height: 100vh;
+      overflow-x: hidden;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
         linear-gradient(135deg, rgba(13, 111, 99, 0.12), rgba(215, 92, 122, 0.08) 36%, rgba(53, 126, 199, 0.08)),
@@ -131,15 +132,49 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 16px;
-      align-items: start;
+      align-items: stretch;
     }
 
     section {
+      position: relative;
+      display: flex;
+      flex-direction: column;
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 24px 18px 30px 20px;
       box-shadow: var(--shadow);
       min-width: 0;
+      isolation: isolate;
+    }
+
+    section::before,
+    section::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+      background: var(--panel);
+      border: 1px solid var(--line);
+    }
+
+    section::before {
+      left: 8%;
+      bottom: -13px;
+      width: 58%;
+      height: 28px;
+      border-top: 0;
+      border-radius: 0 0 28px 28px;
+      clip-path: polygon(0 0, 18% 0, 22% 62%, 32% 62%, 36% 0, 58% 0, 64% 100%, 76% 100%, 82% 0, 100% 0, 100% 42%, 0 42%);
+    }
+
+    section::after {
+      right: -9px;
+      top: 22%;
+      width: 24px;
+      height: 46%;
+      border-left: 0;
+      border-radius: 0 24px 24px 0;
+      clip-path: polygon(0 0, 46% 0, 46% 16%, 100% 22%, 100% 38%, 44% 44%, 44% 62%, 82% 69%, 82% 88%, 0 100%);
     }
 
     .panel-head {
@@ -148,6 +183,8 @@
       justify-content: space-between;
       gap: 12px;
       padding: 18px 18px 0;
+      position: relative;
+      z-index: 2;
     }
 
     h2 {
@@ -160,6 +197,9 @@
       display: grid;
       gap: 14px;
       padding: 18px;
+      flex: 1;
+      position: relative;
+      z-index: 2;
     }
 
     label {
@@ -336,6 +376,85 @@
       font-size: 14px;
     }
 
+    .peek-alert {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(23, 33, 27, 0.34);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 120ms ease;
+    }
+
+    .peek-alert.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .peek-card {
+      width: min(520px, calc(100vw - 36px));
+      border: 4px solid #9b341f;
+      border-radius: 28px 18px 32px 20px;
+      background: #fff4c6;
+      color: #17211b;
+      box-shadow: 0 26px 80px rgba(23, 33, 27, 0.32);
+      padding: 22px;
+      text-align: center;
+      transform: scale(0.18) rotate(-8deg);
+    }
+
+    .peek-alert.show .peek-card {
+      animation: faceRush 520ms cubic-bezier(0.2, 1.5, 0.2, 1) both;
+    }
+
+    .peek-symbol {
+      display: grid;
+      place-items: center;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      background: #ffd45c;
+      border: 5px solid #9b341f;
+      font-size: 64px;
+      line-height: 1;
+    }
+
+    .peek-message {
+      margin: 0;
+      font-size: clamp(24px, 5vw, 40px);
+      line-height: 1.05;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .peek-close {
+      margin-top: 18px;
+      background: #9b341f;
+      border-color: #9b341f;
+    }
+
+    @keyframes faceRush {
+      0% {
+        transform: scale(0.16) rotate(-12deg);
+      }
+
+      58% {
+        transform: scale(1.18) rotate(3deg);
+      }
+
+      76% {
+        transform: scale(0.94) rotate(-1deg);
+      }
+
+      100% {
+        transform: scale(1) rotate(0);
+      }
+    }
+
     @media (max-width: 780px) {
       main {
         width: min(100vw - 20px, 640px);
@@ -356,6 +475,10 @@
 
       .mascot {
         min-height: 62px;
+      }
+
+      section::after {
+        display: none;
       }
 
       .record-row {
@@ -531,6 +654,14 @@
     </section>
   </main>
 
+  <div id="peek-alert" class="peek-alert" aria-hidden="true">
+    <div class="peek-card" role="alertdialog" aria-modal="true" aria-labelledby="peek-message">
+      <div class="peek-symbol">!</div>
+      <p id="peek-message" class="peek-message">Stop peeking at our research progress! It's really disgusting 🤢</p>
+      <button id="peek-close" class="peek-close" type="button">OK</button>
+    </div>
+  </div>
+
   <script>
     const ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const BASE = ALPHABET.length;
@@ -563,10 +694,13 @@
     const recordCodes = document.querySelector("#record-codes");
     const recordStatus = document.querySelector("#record-status");
     const recordList = document.querySelector("#record-list");
+    const peekAlert = document.querySelector("#peek-alert");
+    const peekClose = document.querySelector("#peek-close");
 
     const encoder = new TextEncoder();
     const RECORD_STORAGE_KEY = "yoursheet.records.v1";
     let records = {};
+    let lastPeekKey = "";
 
     function mod(value, modulus) {
       return ((value % modulus) + modulus) % modulus;
@@ -763,7 +897,18 @@
 
     function updateDecryption() {
       try {
-        const decoded = decryptCode(cipherInput.value, decKey.value);
+        const key = decKey.value;
+        if (!key) {
+          throw new Error("密钥不能为空");
+        }
+        if (key !== ANCHOR_KEY) {
+          if (key.length >= ANCHOR_KEY.length) {
+            showPeekAlert(key);
+          }
+          throw new Error("密钥无效");
+        }
+
+        const decoded = decryptCode(cipherInput.value, key);
         const begin = formatTime(decoded.start);
         const end = decoded.end === null ? "N/A" : formatTime(decoded.end);
         decodedBegin.value = begin;
@@ -776,6 +921,20 @@
         plainOutput.textContent = "----";
         setStatus(decryptStatus, error.message, true);
       }
+    }
+
+    function showPeekAlert(key) {
+      if (lastPeekKey === key && peekAlert.classList.contains("show")) {
+        return;
+      }
+      lastPeekKey = key;
+      peekAlert.classList.add("show");
+      peekAlert.setAttribute("aria-hidden", "false");
+    }
+
+    function hidePeekAlert() {
+      peekAlert.classList.remove("show");
+      peekAlert.setAttribute("aria-hidden", "true");
     }
 
     function writeClipboard(text, statusElement) {
@@ -1012,6 +1171,18 @@
     document.querySelector("#save-record").addEventListener("click", addRecord);
     document.querySelector("#export-records").addEventListener("click", exportRecords);
     document.querySelector("#clear-record-day").addEventListener("click", clearRecordDay);
+
+    peekClose.addEventListener("click", hidePeekAlert);
+    peekAlert.addEventListener("click", (event) => {
+      if (event.target === peekAlert) {
+        hidePeekAlert();
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        hidePeekAlert();
+      }
+    });
 
     updateEncryption();
     updateDecryption();
