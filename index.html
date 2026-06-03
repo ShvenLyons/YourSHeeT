@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TimeR</title>
+  <title>YourSheeT</title>
   <style>
     :root {
       color-scheme: light;
@@ -14,6 +14,7 @@
       --panel: #ffffff;
       --accent: #0d6f63;
       --accent-dark: #084d46;
+      --ochre: #a87512;
       --warn: #9b341f;
       --field: #f9fbf8;
       --shadow: 0 18px 50px rgba(32, 47, 39, 0.13);
@@ -40,34 +41,35 @@
     }
 
     header {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 16px;
       margin-bottom: 20px;
     }
 
-    h1 {
+    .brand {
       margin: 0;
       font-size: clamp(32px, 6vw, 72px);
-      line-height: 0.95;
+      line-height: 0.9;
       letter-spacing: 0;
+      font-weight: 850;
+    }
+
+    .brand-main {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .brand-sheet {
+      font-family: "Playfair Display", "Cormorant Garamond", Georgia, "Times New Roman", serif;
+      font-weight: 760;
+      font-style: italic;
+    }
+
+    .brand-ochre {
+      color: var(--ochre);
     }
 
     .subhead {
       margin: 8px 0 0;
       color: var(--muted);
       font-size: 16px;
-    }
-
-    .badge {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 10px 12px;
-      background: rgba(255, 255, 255, 0.72);
-      color: var(--muted);
-      font-size: 13px;
-      white-space: nowrap;
     }
 
     .workspace {
@@ -225,36 +227,15 @@
       color: var(--accent-dark);
     }
 
-    footer {
-      margin-top: 16px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    }
-
     @media (max-width: 780px) {
       main {
         width: min(100vw - 20px, 640px);
         padding: 18px 0;
       }
 
-      header,
       .workspace,
       .row {
         grid-template-columns: 1fr;
-      }
-
-      header {
-        display: grid;
-        align-items: start;
-      }
-
-      .badge {
-        white-space: normal;
       }
     }
   </style>
@@ -263,10 +244,11 @@
   <main>
     <header>
       <div>
-        <h1>TimeR</h1>
-        <p class="subhead">四字母时间段加密工具</p>
+        <h1 class="brand" aria-label="YourSheeT">
+          <span class="brand-main"><span class="brand-ochre">Y</span>our</span><span class="brand-sheet">S<span class="brand-ochre">h</span>ee<span class="brand-ochre">T</span></span>
+        </h1>
+        <p class="subhead">时间工作台</p>
       </div>
-      <div class="badge">无碰撞空间：1440 x 1441 &lt; 52^4</div>
     </header>
 
     <div class="workspace">
@@ -275,10 +257,6 @@
           <h2 id="encrypt-title">加密</h2>
         </div>
         <div class="panel-body">
-          <label>
-            密钥
-            <input id="enc-key" value="dog" autocomplete="off">
-          </label>
           <div class="row">
             <label>
               Begin
@@ -312,7 +290,7 @@
         <div class="panel-body">
           <label>
             密钥
-            <input id="dec-key" value="dog" autocomplete="off">
+            <input id="dec-key" type="password" value="" placeholder="请输入密钥" autocomplete="off">
           </label>
           <label>
             密文
@@ -330,21 +308,15 @@
           </div>
           <div class="output">
             <span>明文</span>
-            <div id="plain-output" class="result">19:26-19:30</div>
+            <div id="plain-output" class="result">----</div>
             <div id="decrypt-status" class="status"></div>
           </div>
           <div class="copy-row">
             <button id="copy-plain" type="button">复制明文</button>
-            <button id="sync-key" class="secondary" type="button">同步密钥</button>
           </div>
         </div>
       </section>
     </div>
-
-    <footer>
-      明文编号为 <code>begin * 1441 + endBucket</code>，其中 <code>endBucket=1440</code> 表示 <code>N/A</code>。
-      密钥生成的仿射置换在 <code>52^4</code> 空间内可逆，因此不同明文不会得到同一个密文。
-    </footer>
   </main>
 
   <script>
@@ -364,7 +336,6 @@
     const ANCHOR_END = "19:30";
     const ANCHOR_CODE = "absd";
 
-    const encKey = document.querySelector("#enc-key");
     const decKey = document.querySelector("#dec-key");
     const beginInput = document.querySelector("#begin");
     const endInput = document.querySelector("#end");
@@ -405,7 +376,7 @@
       }
 
       if (oldR !== 1) {
-        throw new Error("密钥参数不可逆");
+        throw new Error("密钥无效");
       }
 
       return mod(oldS, modulus);
@@ -563,7 +534,7 @@
 
       try {
         const endValue = noEndInput.checked ? null : endInput.value;
-        const code = encryptInterval(beginInput.value, endValue, encKey.value);
+        const code = encryptInterval(beginInput.value, endValue, ANCHOR_KEY);
         cipherOutput.textContent = code;
         setStatus(encryptStatus, "有效");
       } catch (error) {
@@ -600,7 +571,7 @@
       );
     }
 
-    [encKey, beginInput, endInput, noEndInput].forEach((element) => {
+    [beginInput, endInput, noEndInput].forEach((element) => {
       element.addEventListener("input", updateEncryption);
       element.addEventListener("change", updateEncryption);
     });
@@ -614,18 +585,12 @@
     });
 
     document.querySelector("#use-code").addEventListener("click", () => {
-      decKey.value = encKey.value;
       cipherInput.value = cipherOutput.textContent;
       updateDecryption();
     });
 
     document.querySelector("#copy-plain").addEventListener("click", () => {
       writeClipboard(plainOutput.textContent, decryptStatus);
-    });
-
-    document.querySelector("#sync-key").addEventListener("click", () => {
-      decKey.value = encKey.value;
-      updateDecryption();
     });
 
     updateEncryption();
