@@ -9,7 +9,8 @@
       "const", "let", "await", "return", "map()", "push()", "fn()", "{}",
       "[]", "=>", "&&", "||", "if", "else", "while", "true", "false",
       "null", "void", "new", "class", "try", "catch", "import", "export",
-      "tentacle()", "sucker[]", "mucus++", "fold.map()", "wet_try"
+      "socket()", "rib[]", "valve.open()", "spine.bus", "cartilage",
+      "marrow++", "fold.map()", "wet_try", "organ.port"
     ];
     const rareTokens = [
       "💩", "s + h + i + t", "<shit/>", "{shit:true}", "sh_it++",
@@ -21,7 +22,7 @@
       "   +\n  +++\n + + +\n+  +  +",
       " +++\n+ + +\n +++\n+   +"
     ];
-    const sacredTokens = ["✦", "tiny_cross()", "GLORIA", "sanctus()", "✧"];
+    const sacredTokens = ["✦", "relic.cross", "halo.err", "sanctus?", "✧"];
 
     codeBg.replaceChildren();
     const width = window.innerWidth || 1024;
