@@ -203,6 +203,19 @@ header {
 .brand-violet { color: var(--violet); }
 .brand-peach { color: var(--peach); }
 
+.brand-large,
+.brand-small {
+  display: inline-block;
+}
+
+.brand-large {
+  font-size: 1.12em;
+}
+
+.brand-small {
+  font-size: 0.86em;
+}
+
 .subhead {
   margin: 8px 0 0;
   color: #d2c5b8;
